@@ -23,6 +23,7 @@ public class Topico {
     private Long id;
     private String titulo; //asunto
     private String mensaje;
+    @Column(name = "fecha_creacion")
     private LocalDateTime fechaDeCreacion;
     private String curso;
     @ManyToOne(fetch = FetchType.LAZY)
