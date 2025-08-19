@@ -1,6 +1,9 @@
 package com.pintojuan.forumhub.controllers;
 
 import com.pintojuan.forumhub.domain.usuarios.DatosAutenticacion;
+import com.pintojuan.forumhub.domain.usuarios.Usuario;
+import com.pintojuan.forumhub.infra.security.DatosTokenJWT;
+import com.pintojuan.forumhub.infra.security.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +21,16 @@ public class AutenticacionController {
     @Autowired
     private AuthenticationManager manager;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping
     public ResponseEntity iniciarSesion(@RequestBody @Valid DatosAutenticacion datos) {
-        var token = new UsernamePasswordAuthenticationToken(datos.email(), datos.password());
-        var autenticacion = manager.authenticate(token);
+        var authenticationToken = new UsernamePasswordAuthenticationToken(datos.email(), datos.password());
+        var autenticacion = manager.authenticate(authenticationToken);
 
-        return ResponseEntity.ok().build();
+        var tokenJWT = tokenService.generarToken((Usuario) autenticacion.getPrincipal());
+
+        return ResponseEntity.ok(new DatosTokenJWT(tokenJWT));
     }
 }
